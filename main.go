@@ -21,22 +21,28 @@ var selector = map[string]string{
 	"Roman Complex Small":    "romancs.hmp",
 	"Roman Duplex":           "romand.hmp",
 	"Roman Plain":            "romanp.hmp",
-	*/
 	"Roman Simplex":          "romans.hmp",
-	/*
 	"Roman Triplex":          "romant.hmp",
 	*/
+	"Roman Simplex":          "romans.hmp",
 }
 
 func main() {
 	fnt := loadFont("data/hershey")
+	var x, y int
 
-	for k, v := range selector {
-		fmt.Println(k)
+	for _, v := range selector {
 		m := getMap("data/" + v)
 
-		for k, gl := range fnt.Select(m) {
-			fmt.Println(string(k), gl)
+		f := fnt.Select(m)
+		for i := 32; i < 128; i++ {
+			gl := f[rune(i)]
+			if y + gl.W >= 4000 {
+				y = 0
+				x += 200
+			}
+			fmt.Printf("^%d,%d,%s", x, y, gl)
+			y += gl.W
 		}
 	}
 }
