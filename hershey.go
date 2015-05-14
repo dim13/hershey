@@ -19,10 +19,10 @@ type Set []Path
 type Glyph struct {
 	N, K int
 	L, R int
-	S Set
+	S    Set
 }
 
-type Font map[int]Glyph
+type Font map[rune]Glyph
 
 func parseInt(s string) (n int) {
 	s = strings.TrimSpace(s)
@@ -71,7 +71,7 @@ func loadFont(fname string) Font {
 			R: parsePoint(line[9]),
 			S: parseData(line[10:]),
 		}
-		fnt[gl.N] = gl
+		fnt[rune(gl.N)] = gl
 	}
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
@@ -80,13 +80,17 @@ func loadFont(fname string) Font {
 }
 
 func (p Point) String() string {
-	return fmt.Sprintf("%v,%v,", p.X, p.Y)
+	return fmt.Sprintf("(%v %v)", p.X, p.Y)
 }
 
 func (p Path) String() (s string) {
-	s = fmt.Sprint("M", p[0])
-	for _, pt := range p[1:] {
-		s += fmt.Sprint("D", pt)
+	for i, pt := range p {
+		s += fmt.Sprint(pt)
+		if i < len(p)-1 {
+			s += fmt.Sprint(",")
+		} else {
+			s += fmt.Sprint(" ")
+		}
 	}
 	return
 }
@@ -102,10 +106,36 @@ func (g Glyph) String() string {
 	return fmt.Sprint(g.S)
 }
 
+func (g Glyph) Width() int {
+	return g.R - g.L
+}
+
+func (g Glyph) Max() (x, y int) {
+	var top, bottom int
+	var left, right int
+	for _, pt := range g.S {
+		for _, p := range pt {
+			if p.X > right {
+				right = p.X
+			}
+			if p.X < left {
+				left = p.X
+			}
+			if p.Y > top {
+				top = p.Y
+			}
+			if p.Y < bottom {
+				bottom = p.Y
+			}
+		}
+	}
+	return right - left, top - bottom
+}
+
 func (f Font) Select(n []int) Font {
 	ret := make(Font)
 	for i, p := range n {
-		ret[i+32] = f[p]
+		ret[rune(i+32)] = f[rune(p)]
 	}
 	return ret
 }

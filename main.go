@@ -3,6 +3,7 @@ package main
 import "fmt"
 
 var selector = map[string]string{
+	/*
 	"Gothic English Triplex": "gothgbt.hmp",
 	"Gothic German Triplex":  "gothgrt.hmp",
 	"Gothic Italian Triplex": "gothitt.hmp",
@@ -20,8 +21,11 @@ var selector = map[string]string{
 	"Roman Complex Small":    "romancs.hmp",
 	"Roman Duplex":           "romand.hmp",
 	"Roman Plain":            "romanp.hmp",
+	*/
 	"Roman Simplex":          "romans.hmp",
+	/*
 	"Roman Triplex":          "romant.hmp",
+	*/
 }
 
 func main() {
@@ -32,7 +36,8 @@ func main() {
 		m := getMap("data/" + v)
 
 		for k, gl := range fnt.Select(m) {
-			fmt.Println(k, gl)
+			w, h := gl.Max()
+			fmt.Println(string(k), gl.Width(), w, h, gl)
 		}
 	}
 }
