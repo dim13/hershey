@@ -25,9 +25,9 @@ var selector = map[string]string{
 }
 
 func main() {
-	fnt := loadFont("data/hershey")
-	var x, y int
+	var x, y Unit
 
+	fnt := loadFont("data/hershey")
 	m := getMap("data/" + selector["Roman Simplex"])
 
 	f := fnt.Select(m)
@@ -35,9 +35,9 @@ func main() {
 		gl := f[rune(i)]
 		if y+gl.W >= 4000 {
 			y = 0
-			x += 200
+			x += 100
 		}
-		fmt.Printf("^%d,%d,%s", x, y, gl)
+		fmt.Printf("^%v,%v,%s", x, y, gl)
 		y += gl.W
 	}
 }

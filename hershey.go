@@ -9,8 +9,10 @@ import (
 	"strings"
 )
 
+type Unit float64
+
 type Point struct {
-	X, Y int
+	X, Y Unit
 }
 
 type Path []Point
@@ -18,7 +20,7 @@ type Set []Path
 
 type Glyph struct {
 	S Set
-	W int
+	W Unit
 }
 
 type Font map[rune]Glyph
@@ -29,11 +31,11 @@ func parseInt(s string) (n int) {
 	return
 }
 
-func parsePoint(in uint8) int {
-	return int(in) - int('R')
+func parsePoint(in uint8) Unit {
+	return Unit(in) - Unit('R')
 }
 
-func parseData(s string, w, h, scale int) Set {
+func parseData(s string, w, h, scale Unit) Set {
 	var st Set
 	for i, el := range strings.Fields(s) {
 		var ph Path
@@ -68,7 +70,7 @@ func loadFont(fname string) Font {
 		l := parsePoint(line[8])
 		r := parsePoint(line[9])
 		w := r - l
-		scale := 5
+		scale := Unit(2.5)
 		fnt[rune(n)] = Glyph{
 			S: parseData(line[10:], w, 32, scale),
 			W: w * scale,
