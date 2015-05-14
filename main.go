@@ -36,8 +36,7 @@ func main() {
 		m := getMap("data/" + v)
 
 		for k, gl := range fnt.Select(m) {
-			w, h := gl.Max()
-			fmt.Println(string(k), gl.Width(), w, h, gl)
+			fmt.Println(string(k), gl)
 		}
 	}
 }

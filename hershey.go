@@ -17,9 +17,8 @@ type Path []Point
 type Set []Path
 
 type Glyph struct {
-	N, K int
-	L, R int
-	S    Set
+	S Set
+	W int
 }
 
 type Font map[rune]Glyph
@@ -34,7 +33,7 @@ func parsePoint(in uint8) int {
 	return int(in) - int('R')
 }
 
-func parseData(s string) Set {
+func parseData(s string, w, h, scale int) Set {
 	var st Set
 	for i, el := range strings.Fields(s) {
 		var ph Path
@@ -43,8 +42,8 @@ func parseData(s string) Set {
 		}
 		for n := 0; n < len(el); n += 2 {
 			var p Point
-			p.X = parsePoint(el[n])
-			p.Y = parsePoint(el[n+1])
+			p.Y = scale * (w/2 + parsePoint(el[n]))
+			p.X = scale * (h/2 + parsePoint(el[n+1]))
 			ph = append(ph, p)
 		}
 		st = append(st, ph)
@@ -64,14 +63,16 @@ func loadFont(fname string) Font {
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
-		gl := Glyph{
-			N: parseInt(line[0:5]),
-			K: parseInt(line[5:8]),
-			L: parsePoint(line[8]),
-			R: parsePoint(line[9]),
-			S: parseData(line[10:]),
+		n := parseInt(line[0:5])
+		//k := parseInt(line[5:8])
+		l := parsePoint(line[8])
+		r := parsePoint(line[9])
+		w := r - l
+		scale := 5
+		fnt[rune(n)] = Glyph{
+			S: parseData(line[10:], w, 32, scale),
+			W: w * scale,
 		}
-		fnt[rune(gl.N)] = gl
 	}
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
@@ -80,17 +81,14 @@ func loadFont(fname string) Font {
 }
 
 func (p Point) String() string {
-	return fmt.Sprintf("(%v %v)", p.X, p.Y)
+	return fmt.Sprintf("%v,%v,", p.X, p.Y)
 }
 
 func (p Path) String() (s string) {
-	for i, pt := range p {
+	//s = fmt.Sprint("Y0,", p[0])
+	s = fmt.Sprint("M", p[0], "D")
+	for _, pt := range p[1:] {
 		s += fmt.Sprint(pt)
-		if i < len(p)-1 {
-			s += fmt.Sprint(",")
-		} else {
-			s += fmt.Sprint(" ")
-		}
 	}
 	return
 }
@@ -104,32 +102,6 @@ func (st Set) String() (s string) {
 
 func (g Glyph) String() string {
 	return fmt.Sprint(g.S)
-}
-
-func (g Glyph) Width() int {
-	return g.R - g.L
-}
-
-func (g Glyph) Max() (x, y int) {
-	var top, bottom int
-	var left, right int
-	for _, pt := range g.S {
-		for _, p := range pt {
-			if p.X > right {
-				right = p.X
-			}
-			if p.X < left {
-				left = p.X
-			}
-			if p.Y > top {
-				top = p.Y
-			}
-			if p.Y < bottom {
-				bottom = p.Y
-			}
-		}
-	}
-	return right - left, top - bottom
 }
 
 func (f Font) Select(n []int) Font {
