@@ -2,8 +2,6 @@ package main
 
 import "fmt"
 
-var fontfile = "hershey.txt"
-
 var selector = map[string]string{
 	"Gothic English Triplex": "gothgbt.hmp",
 	"Gothic German Triplex":  "gothgrt.hmp",
@@ -27,11 +25,11 @@ var selector = map[string]string{
 }
 
 func main() {
-	fnt := loadFont(fontfile)
+	fnt := loadFont("data/hershey")
 
 	for k, v := range selector {
 		fmt.Println(k)
-		m := getMap(v)
+		m := getMap("data/" + v)
 
 		for k, gl := range fnt.Select(m) {
 			fmt.Println(k, gl)
