@@ -53,7 +53,7 @@ func parseData(s string, w, h, scale Unit) Set {
 	return st
 }
 
-func loadFont(fname string) Font {
+func loadFont(fname string, scale Unit) Font {
 	fnt := make(Font)
 
 	f, err := os.Open(fname)
@@ -70,7 +70,6 @@ func loadFont(fname string) Font {
 		l := parsePoint(line[8])
 		r := parsePoint(line[9])
 		w := r - l
-		scale := Unit(2.5)
 		fnt[rune(n)] = Glyph{
 			S: parseData(line[10:], w, 32, scale),
 			W: w * scale,

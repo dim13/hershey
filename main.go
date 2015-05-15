@@ -24,13 +24,9 @@ var selector = map[string]string{
 	"Gothic Italian Triplex": "gothitt.hmp",
 }
 
-func main() {
+func printAll(f Font) {
 	var x, y Unit
 
-	fnt := loadFont("data/hershey")
-	m := getMap("data/" + selector["Roman Simplex"])
-
-	f := fnt.Select(m)
 	for i := 32; i < 128; i++ {
 		gl := f[rune(i)]
 		if y+gl.W >= 4000 {
@@ -40,4 +36,36 @@ func main() {
 		fmt.Printf("^%v,%v,%s", x, y, gl)
 		y += gl.W
 	}
+}
+
+func printStruct(f Font) {
+	fmt.Println("package main")
+	fmt.Println("var font = Font{")
+	for i := 0; i < len(f); i++ {
+		r := rune(i+32)
+		gl := f[r]
+		fmt.Printf("%q: Glyph{\n", r)
+		fmt.Println("S: Set{")
+		for _, s := range gl.S {
+			fmt.Println("Path{")
+			for _, p := range s {
+				fmt.Print("Point{")
+				fmt.Printf("Unit(%v),", p.X)
+				fmt.Printf("Unit(%v)", p.Y)
+				fmt.Println("},")
+			}
+			fmt.Println("},")
+		}
+		fmt.Println("},")
+		fmt.Printf("W: Unit(%v),\n", gl.W)
+		fmt.Println("},")
+	}
+	fmt.Println("}")
+}
+
+func main() {
+	f := loadFont("data/hershey", Unit(3))
+	m := getMap("data/" + selector["Roman Simplex"])
+	fnt := f.Select(m)
+	printStruct(fnt)
 }
