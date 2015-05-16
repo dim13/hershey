@@ -39,7 +39,7 @@ func printAll(f Font) {
 }
 
 func printStruct(f Font) {
-	fmt.Println("package main")
+	fmt.Println("var height = Unit(72)")
 	fmt.Println("var font = Font{")
 	for i := 0; i < len(f); i++ {
 		r := rune(i+32)
@@ -49,22 +49,19 @@ func printStruct(f Font) {
 		for _, s := range gl.S {
 			fmt.Println("Path{")
 			for _, p := range s {
-				fmt.Print("Point{")
-				fmt.Printf("Unit(%v),", p.X)
-				fmt.Printf("Unit(%v)", p.Y)
-				fmt.Println("},")
+				fmt.Printf("Point{%v, %v},\n", p.X, p.Y)
 			}
 			fmt.Println("},")
 		}
 		fmt.Println("},")
-		fmt.Printf("W: Unit(%v),\n", gl.W)
+		fmt.Printf("W: %v,\n", gl.W)
 		fmt.Println("},")
 	}
 	fmt.Println("}")
 }
 
 func main() {
-	f := loadFont("data/hershey", Unit(3))
+	f := loadFont("data/hershey", Unit(2))
 	m := getMap("data/" + selector["Roman Simplex"])
 	fnt := f.Select(m)
 	printStruct(fnt)
