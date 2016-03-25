@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"flag"
+	"fmt"
+	"log"
+)
 
 var selector = map[string]string{
 	"Roman Plain":            "romanp.hmp",
@@ -42,7 +46,7 @@ func printStruct(f Font) {
 	fmt.Println("var height = Unit(72)")
 	fmt.Println("var font = Font{")
 	for i := 0; i < len(f); i++ {
-		r := rune(i+32)
+		r := rune(i + 32)
 		gl := f[r]
 		fmt.Printf("%q: Glyph{\n", r)
 		fmt.Println("S: Set{")
@@ -60,9 +64,16 @@ func printStruct(f Font) {
 	fmt.Println("}")
 }
 
+var font = flag.String("font", "Roman Simplex", "Font to use")
+
 func main() {
+	flag.Parse()
 	f := loadFont("data/hershey", Unit(2))
-	m := getMap("data/" + selector["Roman Simplex"])
+	s, ok := selector[*font]
+	if !ok {
+		log.Fatal("no such font")
+	}
+	m := getMap("data/" + s)
 	fnt := f.Select(m)
 	printStruct(fnt)
 }
