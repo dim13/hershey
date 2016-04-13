@@ -9,18 +9,16 @@ import (
 	"strings"
 )
 
-type Unit float64
-
 type Point struct {
-	X, Y Unit
+	X, Y int
 }
 
 type Path []Point
 type Set []Path
 
 type Glyph struct {
-	S Set
-	W Unit
+	Set   Set
+	Width int
 }
 
 type Font map[rune]Glyph
@@ -31,11 +29,11 @@ func parseInt(s string) (n int) {
 	return
 }
 
-func parsePoint(in uint8) Unit {
-	return Unit(in) - Unit('R')
+func parsePoint(in uint8) int {
+	return int(in) - int('R')
 }
 
-func parseData(s string, w, h, scale Unit) Set {
+func parseData(s string, w, h int) Set {
 	var st Set
 	for i, el := range strings.Fields(s) {
 		var ph Path
@@ -44,8 +42,8 @@ func parseData(s string, w, h, scale Unit) Set {
 		}
 		for n := 0; n < len(el); n += 2 {
 			var p Point
-			p.Y = scale * (w/2 + parsePoint(el[n]))
-			p.X = scale * (h/2 + parsePoint(el[n+1]))
+			p.Y = w/2 + parsePoint(el[n])
+			p.X = h/2 + parsePoint(el[n+1])
 			ph = append(ph, p)
 		}
 		st = append(st, ph)
@@ -53,7 +51,7 @@ func parseData(s string, w, h, scale Unit) Set {
 	return st
 }
 
-func loadFont(fname string, scale Unit) Font {
+func loadFont(fname string) Font {
 	fnt := make(Font)
 
 	f, err := os.Open(fname)
@@ -71,8 +69,8 @@ func loadFont(fname string, scale Unit) Font {
 		r := parsePoint(line[9])
 		w := r - l
 		fnt[rune(n)] = Glyph{
-			S: parseData(line[10:], w, 32, scale),
-			W: w * scale,
+			Set:   parseData(line[10:], w, 32),
+			Width: w,
 		}
 	}
 	if err := scanner.Err(); err != nil {
@@ -102,7 +100,7 @@ func (st Set) String() (s string) {
 }
 
 func (g Glyph) String() string {
-	return fmt.Sprint(g.S)
+	return fmt.Sprint(g.Set)
 }
 
 func (f Font) Select(n []int) Font {

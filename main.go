@@ -29,28 +29,28 @@ var selector = map[string]string{
 }
 
 func printAll(f Font) {
-	var x, y Unit
+	var x, y int
 
 	for i := 32; i < 128; i++ {
 		gl := f[rune(i)]
-		if y+gl.W >= 4000 {
+		if y+gl.Width >= 4000 {
 			y = 0
 			x += 100
 		}
 		fmt.Printf("^%v,%v,%s", x, y, gl)
-		y += gl.W
+		y += gl.Width
 	}
 }
 
 func printStruct(f Font) {
-	fmt.Println("var height = Unit(72)")
+	fmt.Println("var height = 32")
 	fmt.Println("var font = Font{")
 	for i := 0; i < len(f); i++ {
 		r := rune(i + 32)
 		gl := f[r]
 		fmt.Printf("%q: Glyph{\n", r)
-		fmt.Println("S: Set{")
-		for _, s := range gl.S {
+		fmt.Println("Set: Set{")
+		for _, s := range gl.Set {
 			fmt.Println("Path{")
 			for _, p := range s {
 				fmt.Printf("Point{%v, %v},\n", p.X, p.Y)
@@ -58,7 +58,7 @@ func printStruct(f Font) {
 			fmt.Println("},")
 		}
 		fmt.Println("},")
-		fmt.Printf("W: %v,\n", gl.W)
+		fmt.Printf("Width: %v,\n", gl.Width)
 		fmt.Println("},")
 	}
 	fmt.Println("}")
@@ -68,7 +68,7 @@ var font = flag.String("font", "Roman Simplex", "Font to use")
 
 func main() {
 	flag.Parse()
-	f := loadFont("data/hershey", Unit(2))
+	f := loadFont("data/hershey")
 	s, ok := selector[*font]
 	if !ok {
 		log.Fatal("no such font")
