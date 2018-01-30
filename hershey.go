@@ -20,6 +20,8 @@ type Glyph struct {
 	Set    Set
 	Width  int
 	Height int
+	Left   int
+	Right  int
 }
 
 type Font map[rune]Glyph
@@ -34,7 +36,7 @@ func parsePoint(in uint8) int {
 	return int(in) - int('R')
 }
 
-func parseData(s string, w, h int) Set {
+func parseData(s string) Set {
 	var st Set
 	scanner := bufio.NewScanner(strings.NewReader(s))
 	scanner.Split(bufio.ScanWords)
@@ -43,15 +45,15 @@ func parseData(s string, w, h int) Set {
 		if len(el)%2 != 0 && el[0] == 'R' {
 			el = el[1:]
 		}
-		var l Path
+		var ph Path
 		for n := 0; n < len(el); n += 2 {
 			p := Point{
-				Y: w/2 + parsePoint(el[n]),
-				X: h/2 + parsePoint(el[n+1]),
+				Y: parsePoint(el[n]),
+				X: parsePoint(el[n+1]),
 			}
-			l = append(l, p)
+			ph = append(ph, p)
 		}
-		st = append(st, l)
+		st = append(st, ph)
 	}
 	return st
 }
@@ -69,14 +71,13 @@ func loadFont(fname string) Font {
 	for scanner.Scan() {
 		line := scanner.Text()
 		n := parseInt(line[0:5])
-		//k := parseInt(line[5:8])
+		k := parseInt(line[5:8])
 		l := parsePoint(line[8])
 		r := parsePoint(line[9])
-		w := r - l
 		fnt[rune(n)] = Glyph{
-			Set:    parseData(line[10:], w, 32),
-			Width:  w,
-			Height: 32,
+			Set:   parseData(line[10 : 10+(k-1)*2]),
+			Left:  l,
+			Right: r,
 		}
 	}
 	if err := scanner.Err(); err != nil {

@@ -33,12 +33,13 @@ func printAll(f Font) {
 
 	for i := 32; i < 128; i++ {
 		gl := f[rune(i)]
-		if y+gl.Width >= 4000 {
+		width := gl.Right - gl.Left
+		if y+width >= 4000 {
 			y = 0
 			x += 100
 		}
 		fmt.Printf("^%v,%v,%s", x, y, gl)
-		y += gl.Width
+		y += width
 	}
 }
 
@@ -57,8 +58,8 @@ func printStruct(f Font) {
 			fmt.Println("},")
 		}
 		fmt.Println("},")
-		fmt.Printf("Width: %v,\n", gl.Width)
-		fmt.Printf("Height: %v,\n", gl.Height)
+		fmt.Printf("Left: %v,\n", gl.Left)
+		fmt.Printf("Right: %v,\n", gl.Right)
 		fmt.Println("},")
 	}
 	fmt.Println("}")
