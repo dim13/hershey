@@ -1,20 +1,24 @@
 package main
 
 import (
-	"io/ioutil"
-	"strings"
+	"bufio"
 	"log"
+	"os"
 	"strconv"
+	"strings"
 )
 
 func getMap(fname string) []int {
 	var n []int
-
-	f, err := ioutil.ReadFile(fname)
+	f, err := os.Open(fname)
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, r := range strings.Fields(string(f)) {
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	scanner.Split(bufio.ScanWords)
+	for scanner.Scan() {
+		r := scanner.Text()
 		if strings.Contains(r, "-") {
 			rr := strings.Split(r, "-")
 			a, _ := strconv.Atoi(rr[0])
