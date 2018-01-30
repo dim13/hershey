@@ -43,7 +43,6 @@ func printAll(f Font) {
 }
 
 func printStruct(f Font) {
-	fmt.Println("var height = 32")
 	fmt.Println("var font = Font{")
 	for i := 0; i < len(f); i++ {
 		r := rune(i + 32)
@@ -59,6 +58,7 @@ func printStruct(f Font) {
 		}
 		fmt.Println("},")
 		fmt.Printf("Width: %v,\n", gl.Width)
+		fmt.Printf("Height: %v,\n", gl.Height)
 		fmt.Println("},")
 	}
 	fmt.Println("}")

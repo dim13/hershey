@@ -17,8 +17,9 @@ type Path []Point
 type Set []Path
 
 type Glyph struct {
-	Set   Set
-	Width int
+	Set    Set
+	Width  int
+	Height int
 }
 
 type Font map[rune]Glyph
@@ -35,18 +36,22 @@ func parsePoint(in uint8) int {
 
 func parseData(s string, w, h int) Set {
 	var st Set
-	for i, el := range strings.Fields(s) {
-		var ph Path
-		if i > 0 {
+	scanner := bufio.NewScanner(strings.NewReader(s))
+	scanner.Split(bufio.ScanWords)
+	for scanner.Scan() {
+		el := scanner.Text()
+		if len(el)%2 != 0 && el[0] == 'R' {
 			el = el[1:]
 		}
+		var l Path
 		for n := 0; n < len(el); n += 2 {
-			var p Point
-			p.Y = w/2 + parsePoint(el[n])
-			p.X = h/2 + parsePoint(el[n+1])
-			ph = append(ph, p)
+			p := Point{
+				Y: w/2 + parsePoint(el[n]),
+				X: h/2 + parsePoint(el[n+1]),
+			}
+			l = append(l, p)
 		}
-		st = append(st, ph)
+		st = append(st, l)
 	}
 	return st
 }
@@ -69,8 +74,9 @@ func loadFont(fname string) Font {
 		r := parsePoint(line[9])
 		w := r - l
 		fnt[rune(n)] = Glyph{
-			Set:   parseData(line[10:], w, 32),
-			Width: w,
+			Set:    parseData(line[10:], w, 32),
+			Width:  w,
+			Height: 32,
 		}
 	}
 	if err := scanner.Err(); err != nil {
