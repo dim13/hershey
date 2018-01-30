@@ -17,11 +17,9 @@ type Path []Point
 type Set []Path
 
 type Glyph struct {
-	Set    Set
-	Width  int
-	Height int
-	Left   int
-	Right  int
+	Set   Set
+	Left  int
+	Right int
 }
 
 type Font map[rune]Glyph
