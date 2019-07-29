@@ -3,16 +3,14 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"image"
 	"log"
 	"os"
 	"strconv"
 	"strings"
 )
 
-type Point struct {
-	X, Y int
-}
-
+type Point image.Point
 type Path []Point
 type Set []Path
 
@@ -46,8 +44,8 @@ func parseData(s string) Set {
 		var ph Path
 		for n := 0; n < len(el); n += 2 {
 			p := Point{
-				Y: parsePoint(el[n]),
 				X: parsePoint(el[n+1]),
+				Y: parsePoint(el[n]),
 			}
 			ph = append(ph, p)
 		}
