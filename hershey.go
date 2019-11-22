@@ -10,8 +10,7 @@ import (
 	"strings"
 )
 
-type Point image.Point
-type Path []Point
+type Path []image.Point
 type Set []Path
 
 type Glyph struct {
@@ -43,11 +42,8 @@ func parseData(s string) Set {
 		}
 		var ph Path
 		for n := 0; n < len(el); n += 2 {
-			p := Point{
-				X: parsePoint(el[n+1]),
-				Y: parsePoint(el[n]),
-			}
-			ph = append(ph, p)
+			x, y := parsePoint(el[n+1]), parsePoint(el[n])
+			ph = append(ph, image.Pt(x, y))
 		}
 		st = append(st, ph)
 	}
@@ -80,10 +76,6 @@ func loadFont(fname string) Font {
 		log.Fatal(err)
 	}
 	return fnt
-}
-
-func (p Point) String() string {
-	return fmt.Sprintf("%v,%v,", p.X, p.Y)
 }
 
 func (p Path) String() (s string) {
